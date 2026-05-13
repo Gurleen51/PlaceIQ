@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 /* ═══════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════ */
@@ -224,7 +226,7 @@ export default function Jobs() {
 
   /* Fetch jobs */
   useEffect(() => {
-    fetch("http://localhost:5000/jobs")
+    fetch(`${API}/jobs`)
       .then(r => r.json())
       .then(data => { setJobs(data); setFiltered(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -235,6 +237,7 @@ export default function Jobs() {
     const onKey = (e) => { if (e.key === "Escape") closeModal(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* Prevent body scroll when modal open */
