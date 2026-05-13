@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell,
   Legend, ResponsiveContainer, LabelList, CartesianGrid,
 } from "recharts";
@@ -51,8 +53,8 @@ function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      axios.get("http://localhost:5000/dashboard-stats"),
-      axios.get("http://localhost:5000/skills-data"),
+      axios.get(`${API}/dashboard-stats`),
+      axios.get(`${API}/skills-data`),
     ])
       .then(([statsRes, skillsRes]) => {
         setStats(statsRes.data);
@@ -71,7 +73,7 @@ function Dashboard() {
   const [myMatches, setMyMatches] = useState([]);
   useEffect(() => {
     if (!isStudent || !token) return;
-    fetch("http://localhost:5000/my-dashboard-matches", {
+    fetch(`${API}/my-dashboard-matches`, {
       headers: { Authorization: token },
     })
       .then(r => r.json())
