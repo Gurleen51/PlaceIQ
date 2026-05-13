@@ -1,18 +1,19 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 
-const ResumeUpload = ({ userId, onUploadSuccess }) => {
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+const ResumeUpload = ({ userId }) => {
   const [file,      setFile]      = useState(null);
   const [msg,       setMsg]       = useState("");
   const [error,     setError]     = useState("");
   const [uploading, setUploading] = useState(false);
   const [progress,  setProgress]  = useState(0);
   const [dragging,  setDragging]  = useState(false);
-  const [parsed,    setParsed]    = useState(null);   // extracted fields
   const inputRef = useRef();
 
   const handleFile = (f) => {
-    setMsg(""); setError(""); setParsed(null);
+    setMsg(""); setError("");
     if (!f) return;
     if (f.type !== "application/pdf") { setError("Only PDF files are accepted."); return; }
     if (f.size > 5 * 1024 * 1024)    { setError("File size must be under 5 MB."); return; }
@@ -28,31 +29,25 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
     if (!file)   { setError("Please select a PDF file first."); return; }
     if (!userId) { setError("User ID not found. Please reload and try again."); return; }
 
-    setUploading(true); setProgress(0); setParsed(null);
+    setUploading(true); setProgress(0);
 
     const formData = new FormData();
     formData.append("resume", file);
 
     try {
-      const res = await axios.post(
-        `http://localhost:5000/upload-resume/${userId}`,
+      await axios.post(
+        `${API}/upload-resume/${userId}`,
         formData,
         {
-          headers: { Authorization: localStorage.getItem("token") || "" },
+          headers: {
+            /* Send auth token so the protected route accepts the request */
+            Authorization: localStorage.getItem("token") || "",
+          },
           onUploadProgress: (e) => setProgress(Math.round((e.loaded / e.total) * 100)),
         }
       );
-
-      const data = res.data;
       setMsg("Resume uploaded successfully! ✓");
       setFile(null); setProgress(0);
-
-      /* Show what was parsed */
-      if (data.parsed) setParsed(data.parsed);
-
-      /* Notify parent (StudentDashboard) so it can refresh profile */
-      if (onUploadSuccess) onUploadSuccess(data);
-
     } catch (err) {
       setError(err.response?.data?.error || "Upload failed. Please try again.");
     } finally {
@@ -81,7 +76,7 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
           {file ? file.name : "Click or drag & drop your resume"}
         </p>
         <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#94a3b8" }}>
-          PDF only · Max 5 MB · Skills auto-extracted on upload
+          PDF only · Max 5 MB
         </p>
         <input
           ref={inputRef} type="file" accept=".pdf"
@@ -108,7 +103,7 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
             </div>
           </div>
           <button
-            onClick={(e) => { e.stopPropagation(); setFile(null); setMsg(""); setError(""); setParsed(null); }}
+            onClick={(e) => { e.stopPropagation(); setFile(null); setMsg(""); setError(""); }}
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", color: "#94a3b8" }}
           >✕</button>
         </div>
@@ -118,7 +113,7 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
       {uploading && (
         <div style={{ marginBottom: "14px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-            <span style={{ fontSize: "12px", color: "#64748b" }}>Uploading & analysing…</span>
+            <span style={{ fontSize: "12px", color: "#64748b" }}>Uploading…</span>
             <span style={{ fontSize: "12px", fontWeight: "700", color: "#3B82F6" }}>{progress}%</span>
           </div>
           <div style={{ background: "#e2e8f0", height: "6px", borderRadius: "6px", overflow: "hidden" }}>
@@ -131,7 +126,7 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
         </div>
       )}
 
-      {/* Success */}
+      {/* Success / Error messages */}
       {msg && (
         <div style={{
           background: "#dcfce7", border: "1px solid #86efac",
@@ -142,8 +137,6 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
           {msg}
         </div>
       )}
-
-      {/* Error */}
       {error && (
         <div style={{
           background: "#FEF2F2", border: "1px solid #FECACA",
@@ -151,60 +144,6 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
           marginBottom: "14px", fontSize: "13px", color: "#DC2626",
         }}>
           ⚠️ {error}
-        </div>
-      )}
-
-      {/* Parsed result preview */}
-      {parsed && (
-        <div style={{
-          background: "#f0fdf4", border: "1px solid #86efac",
-          borderRadius: "12px", padding: "16px",
-          marginBottom: "14px",
-        }}>
-          <p style={{ margin: "0 0 12px", fontSize: "13px", fontWeight: "800", color: "#15803d", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            🤖 Auto-Extracted from Resume
-          </p>
-
-          {parsed.skills && parsed.skills.length > 0 && (
-            <div style={{ marginBottom: "10px" }}>
-              <p style={{ margin: "0 0 6px", fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Skills Found ({parsed.skills.length})
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                {parsed.skills.map((sk, i) => (
-                  <span key={i} style={{
-                    padding: "3px 10px", borderRadius: "20px",
-                    background: "#dcfce7", color: "#15803d",
-                    fontSize: "12px", fontWeight: "600",
-                  }}>{sk}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {parsed.education && (
-            <div style={{ marginBottom: "6px" }}>
-              <p style={{ margin: "0 0 2px", fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.04em" }}>Education Detected</p>
-              <p style={{ margin: 0, fontSize: "13px", color: "#0f172a" }}>{parsed.education}</p>
-            </div>
-          )}
-
-          {parsed.experience && (
-            <div style={{ marginBottom: "6px" }}>
-              <p style={{ margin: "0 0 2px", fontSize: "11px", fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.04em" }}>Experience Detected</p>
-              <p style={{ margin: 0, fontSize: "13px", color: "#0f172a" }}>{parsed.experience}</p>
-            </div>
-          )}
-
-          {parsed.skills?.length === 0 && !parsed.education && !parsed.experience && (
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
-              Could not extract structured data from this PDF. Please update your profile manually.
-            </p>
-          )}
-
-          <p style={{ margin: "10px 0 0", fontSize: "11px", color: "#64748b" }}>
-            ✓ Your profile has been updated automatically. Check the Profile tab to review.
-          </p>
         </div>
       )}
 
@@ -224,7 +163,7 @@ const ResumeUpload = ({ userId, onUploadSuccess }) => {
           transition: "all 0.2s",
         }}
       >
-        {uploading ? "Uploading & Analysing…" : "Upload Resume"}
+        {uploading ? "Uploading…" : "Upload Resume"}
       </button>
     </div>
   );
