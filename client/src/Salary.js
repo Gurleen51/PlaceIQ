@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList,
 } from "recharts";
@@ -27,7 +29,7 @@ function Salary() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/salary-data")
+    fetch(`${API}/salary-data`)
       .then(res => res.json())
       .then(data => { setSalary(data); setLoading(false); })
       .catch(() => setLoading(false));
