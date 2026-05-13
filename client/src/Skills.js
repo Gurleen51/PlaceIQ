@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
 } from "recharts";
 
@@ -13,7 +15,7 @@ function Skills() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/skills-data")
+    fetch(`${API}/skills-data`)
       .then(res => res.json())
       .then(data => { setSkills(data); setLoading(false); })
       .catch(() => setLoading(false));
