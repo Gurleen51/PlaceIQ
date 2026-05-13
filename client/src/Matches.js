@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 export default function Matches() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ export default function Matches() {
           matches with correct salary, openings and skill data.
           The public /matches endpoint returns ALL users mixed together
           and has no per-student filtering. ── */
-    fetch("http://localhost:5000/my-matches", {
+    fetch(`${API}/my-matches`, {
       headers: { Authorization: token || "" },
     })
       .then(res => res.json())
