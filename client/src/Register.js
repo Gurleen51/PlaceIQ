@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 const ROLE_OPTIONS = [
   "Full Stack Developer", "Frontend Developer", "Backend Developer",
   "Data Analyst", "Data Engineer", "Software Engineer",
@@ -7,47 +9,33 @@ const ROLE_OPTIONS = [
   "DevOps Engineer", "Cloud Engineer", "ML Engineer",
 ];
 
-const INTERNSHIP_OPTIONS = [
-  { value: "none",      label: "No internship" },
-  { value: "ongoing",   label: "Currently doing internship" },
-  { value: "completed", label: "Completed internship" },
-];
-
-/* ── Step labels ── */
-const STEPS = [
-  "Account Details",
-  "Academic Profile",
-  "Experience & Extras",
-];
+const STEPS = ["Account Details", "Academic Profile", "Certifications & Projects"];
 
 export default function Register() {
   const [form, setForm] = useState({
     name: "", email: "", password: "",
     skills: "", education: "", experience: "", preferred_role: "",
-    /* new fields */
-    certifications: "", projects: "",
-    cgpa: "", internship_status: "none",
+    certifications: "", projects: "", cgpa: "",
   });
   const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
-  const [step,    setStep]    = useState(1); // 1 | 2 | 3
+  const [step,    setStep]    = useState(1);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
   const skillTags = form.skills.split(",").map(s => s.trim()).filter(Boolean);
   const certTags  = form.certifications.split(",").map(s => s.trim()).filter(Boolean);
 
-  /* ── Validate step 1 ── */
+  /* ── Validators ── */
   const validate1 = () => {
-    if (!form.name)                         return "Full name is required.";
-    if (!form.email)                        return "Email is required.";
+    if (!form.name)     return "Full name is required.";
+    if (!form.email)    return "Email is required.";
     if (!form.password || form.password.length < 6)
       return "Password must be at least 6 characters.";
     return "";
   };
 
-  /* ── Validate step 2 ── */
   const validate2 = () => {
     if (!form.skills)         return "Please enter at least one skill.";
     if (!form.preferred_role) return "Please select a preferred role.";
@@ -57,23 +45,24 @@ export default function Register() {
   const goNext = (currentStep) => {
     const err = currentStep === 1 ? validate1() : validate2();
     if (err) { setError(err); return; }
-    setError("");
-    setStep(currentStep + 1);
+    setError(""); setStep(currentStep + 1);
   };
 
   /* ── Final submit ── */
   const register = async () => {
-    setError(""); setLoading(true);
-    const cgpaVal = form.cgpa !== "" ? Number(form.cgpa) : null;
-    if (form.cgpa !== "" && (isNaN(cgpaVal) || cgpaVal < 0 || cgpaVal > 10)) {
-      setError("CGPA must be a number between 0 and 10.");
-      setLoading(false); return;
+    setError("");
+    if (form.cgpa !== "" && (isNaN(Number(form.cgpa)) || Number(form.cgpa) < 0 || Number(form.cgpa) > 10)) {
+      setError("CGPA must be a number between 0 and 10."); return;
     }
+    setLoading(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/register", {
+      const res  = await fetch(`${API}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, cgpa: cgpaVal }),
+        body: JSON.stringify({
+          ...form,
+          cgpa: form.cgpa !== "" ? Number(form.cgpa) : null,
+        }),
       });
       const data = await res.json();
       if (data.message) {
@@ -113,7 +102,7 @@ export default function Register() {
           </p>
         </div>
 
-        {/* Step progress bar */}
+        {/* Step progress */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "6px" }}>
           {STEPS.map((_, i) => (
             <div key={i} style={{
@@ -123,11 +112,11 @@ export default function Register() {
             }} />
           ))}
         </div>
-        <p style={{ margin: "0 0 18px", fontSize: "11px", color: "#94a3b8", textTransform: "uppercase", fontWeight: "700", letterSpacing: "0.06em" }}>
+        <p style={{ margin: "0 0 20px", fontSize: "11px", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           Step {step} of {STEPS.length} — {STEPS[step - 1]}
         </p>
 
-        {/* Error banner */}
+        {/* Error */}
         {error && (
           <div style={{
             background: "#FEF2F2", border: "1px solid #FECACA",
@@ -138,16 +127,16 @@ export default function Register() {
           </div>
         )}
 
-        {/* ═══════════ STEP 1 — Account ═══════════ */}
+        {/* ═══ STEP 1 — Account ═══ */}
         {step === 1 && (
           <>
             <Field label="Full Name">
-              <input style={inputStyle} placeholder="e.g. Arjun Sharma" value={form.name}
-                onChange={e => set("name", e.target.value)} />
+              <input style={inputStyle} placeholder="e.g. Arjun Sharma"
+                value={form.name} onChange={e => set("name", e.target.value)} />
             </Field>
             <Field label="Email Address">
-              <input style={inputStyle} type="email" placeholder="you@college.edu" value={form.email}
-                onChange={e => set("email", e.target.value)} />
+              <input style={inputStyle} type="email" placeholder="you@college.edu"
+                value={form.email} onChange={e => set("email", e.target.value)} />
             </Field>
             <Field label="Password">
               <div style={{ position: "relative" }}>
@@ -163,8 +152,8 @@ export default function Register() {
                 </button>
               </div>
               {form.password.length > 0 && (
-                <div style={{ marginTop: "6px", display: "flex", gap: "4px" }}>
-                  {[1, 2, 3, 4].map(i => (
+                <div style={{ display: "flex", gap: "4px", marginTop: "6px" }}>
+                  {[1,2,3,4].map(i => (
                     <div key={i} style={{
                       flex: 1, height: "3px", borderRadius: "3px",
                       background: form.password.length >= i * 3 ? strengthColor(form.password.length) : "#e2e8f0",
@@ -177,7 +166,7 @@ export default function Register() {
           </>
         )}
 
-        {/* ═══════════ STEP 2 — Academic Profile ═══════════ */}
+        {/* ═══ STEP 2 — Academic Profile ═══ */}
         {step === 2 && (
           <>
             <Field label="Skills (comma-separated)">
@@ -200,16 +189,15 @@ export default function Register() {
                 value={form.experience} onChange={e => set("experience", e.target.value)} />
             </Field>
             <Field label="Preferred Role">
-              <select value={form.preferred_role}
-                onChange={e => set("preferred_role", e.target.value)}
-                style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}>
+              <select value={form.preferred_role} onChange={e => set("preferred_role", e.target.value)}
+                style={{ ...inputStyle, cursor: "pointer", appearance: "none" }}>
                 <option value="">— Select a role —</option>
                 {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
             </Field>
             <div style={{ display: "flex", gap: "10px" }}>
               <button onClick={() => { setStep(1); setError(""); }}
-                style={{ ...primaryBtn, background: "#f1f5f9", color: "#475569", width: "auto", padding: "13px 18px" }}>
+                style={{ ...primaryBtn, background: "#f1f5f9", color: "#475569", flex: "0 0 auto", width: "auto", padding: "12px 18px" }}>
                 ← Back
               </button>
               <button onClick={() => goNext(2)} style={{ ...primaryBtn, flex: 1 }}>Continue →</button>
@@ -217,15 +205,52 @@ export default function Register() {
           </>
         )}
 
-        {/* ═══════════ STEP 3 — Experience & Extras ═══════════ */}
+        {/* ═══ STEP 3 — Certifications, Projects, CGPA ═══ */}
         {step === 3 && (
           <>
+            {/* CGPA */}
+            <Field label="CGPA" hint="Out of 10 · Optional">
+              <div style={{ position: "relative" }}>
+                <input
+                  style={{ ...inputStyle, paddingRight: "60px" }}
+                  type="number" min="0" max="10" step="0.01"
+                  placeholder="e.g. 8.5"
+                  value={form.cgpa}
+                  onChange={e => set("cgpa", e.target.value)}
+                />
+                {form.cgpa !== "" && !isNaN(Number(form.cgpa)) && (
+                  <span style={{
+                    position: "absolute", right: "12px", top: "50%",
+                    transform: "translateY(-50%)",
+                    fontSize: "11px", fontWeight: "800",
+                    color: Number(form.cgpa) >= 7.5 ? "#15803d"
+                         : Number(form.cgpa) >= 6   ? "#92400e" : "#b91c1c",
+                  }}>
+                    {Number(form.cgpa) >= 7.5 ? "Good" : Number(form.cgpa) >= 6 ? "Avg" : "Low"}
+                  </span>
+                )}
+              </div>
+              {/* CGPA bar */}
+              {form.cgpa !== "" && !isNaN(Number(form.cgpa)) && (
+                <div style={{ marginTop: "6px", background: "#f1f5f9", height: "4px", borderRadius: "4px", overflow: "hidden" }}>
+                  <div style={{
+                    width: `${Math.min(100, (Number(form.cgpa) / 10) * 100)}%`,
+                    height: "100%", borderRadius: "4px",
+                    background: Number(form.cgpa) >= 7.5 ? "#22c55e"
+                              : Number(form.cgpa) >= 6   ? "#F59E0B" : "#EF4444",
+                    transition: "width 0.3s",
+                  }} />
+                </div>
+              )}
+            </Field>
+
             {/* Certifications */}
-            <Field label="Certifications (comma-separated)" hint="Optional">
+            <Field label="Certifications" hint="Comma-separated · Optional">
               <input style={inputStyle}
-                placeholder="AWS Cloud Practitioner, Google Data Analytics…"
+                placeholder="AWS Cloud Practitioner, Google Analytics…"
                 value={form.certifications}
-                onChange={e => set("certifications", e.target.value)} />
+                onChange={e => set("certifications", e.target.value)}
+              />
               {certTags.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "8px" }}>
                   {certTags.map((c, i) => (
@@ -245,65 +270,9 @@ export default function Register() {
               />
             </Field>
 
-            {/* Two-column row */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-              {/* CGPA */}
-              <Field label="CGPA" hint="0 – 10, Optional">
-                <div style={{ position: "relative" }}>
-                  <input
-                    style={{ ...inputStyle, paddingRight: "44px" }}
-                    type="number" min="0" max="10" step="0.1"
-                    placeholder="e.g. 8.5"
-                    value={form.cgpa}
-                    onChange={e => set("cgpa", e.target.value)}
-                  />
-                  {form.cgpa !== "" && (
-                    <span style={{
-                      position: "absolute", right: "12px", top: "50%",
-                      transform: "translateY(-50%)",
-                      fontSize: "11px", fontWeight: "800",
-                      color: Number(form.cgpa) >= 8 ? "#15803d" : Number(form.cgpa) >= 6 ? "#92400e" : "#b91c1c",
-                    }}>
-                      {Number(form.cgpa) >= 8 ? "Great" : Number(form.cgpa) >= 6 ? "Good" : "Low"}
-                    </span>
-                  )}
-                </div>
-                {/* CGPA bar */}
-                {form.cgpa !== "" && !isNaN(Number(form.cgpa)) && (
-                  <div style={{ marginTop: "6px", background: "#f1f5f9", height: "4px", borderRadius: "4px", overflow: "hidden" }}>
-                    <div style={{
-                      width: `${Math.min(100, Math.max(0, Number(form.cgpa) * 10))}%`,
-                      height: "100%", borderRadius: "4px",
-                      background: Number(form.cgpa) >= 8 ? "#22c55e" : Number(form.cgpa) >= 6 ? "#F59E0B" : "#EF4444",
-                      transition: "width 0.3s",
-                    }} />
-                  </div>
-                )}
-              </Field>
-
-              {/* Internship Status */}
-              <Field label="Internship Status">
-                <select
-                  value={form.internship_status}
-                  onChange={e => set("internship_status", e.target.value)}
-                  style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
-                >
-                  {INTERNSHIP_OPTIONS.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-                <span style={{ display: "block", marginTop: "6px", fontSize: "11px", color: "#64748b" }}>
-                  {form.internship_status === "completed" ? "✅ Great! Internship experience boosts your profile." :
-                   form.internship_status === "ongoing"   ? "🔄 Keep going — add it once complete." :
-                   "💡 Internships can improve match scores."}
-                </span>
-              </Field>
-            </div>
-
-            {/* Action buttons */}
-            <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
+            <div style={{ display: "flex", gap: "10px" }}>
               <button onClick={() => { setStep(2); setError(""); }}
-                style={{ ...primaryBtn, background: "#f1f5f9", color: "#475569", width: "auto", padding: "13px 18px" }}>
+                style={{ ...primaryBtn, background: "#f1f5f9", color: "#475569", flex: "0 0 auto", width: "auto", padding: "12px 18px" }}>
                 ← Back
               </button>
               <button onClick={register} disabled={loading} style={{ ...primaryBtn, flex: 1 }}>
@@ -324,7 +293,7 @@ export default function Register() {
   );
 }
 
-/* ── Small helpers ── */
+/* ── Helpers ── */
 function Field({ label, hint, children }) {
   return (
     <div style={{ marginBottom: "14px" }}>
@@ -349,8 +318,7 @@ function strengthColor(len) {
 
 const tagStyle = (bg, color) => ({
   padding: "3px 10px", borderRadius: "20px",
-  background: bg, color,
-  fontSize: "12px", fontWeight: "600",
+  background: bg, color, fontSize: "12px", fontWeight: "600",
 });
 
 const inputStyle = {
@@ -364,8 +332,7 @@ const primaryBtn = {
   width: "100%", padding: "13px",
   background: "linear-gradient(135deg, #3B82F6, #2563eb)",
   color: "#fff", border: "none", borderRadius: "12px",
-  fontSize: "15px", fontWeight: "700", cursor: "pointer",
-  marginTop: "6px",
+  fontSize: "15px", fontWeight: "700", cursor: "pointer", marginTop: "6px",
 };
 
 const eyeBtn = {
