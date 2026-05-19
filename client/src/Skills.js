@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
 } from "recharts";
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const PALETTE = [
   "#3B82F6","#6EE7B7","#F59E0B","#EF4444","#8B5CF6",
