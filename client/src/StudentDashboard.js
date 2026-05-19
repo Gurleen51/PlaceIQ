@@ -3,6 +3,7 @@ import ResumeUpload from "./ResumeUpload";
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
+
 const authHeaders = () => ({
   "Content-Type": "application/json",
   Authorization: localStorage.getItem("token") || "",
