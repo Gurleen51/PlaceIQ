@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell,
   Legend, ResponsiveContainer, LabelList, CartesianGrid,
 } from "recharts";
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const COLORS = ["#3B82F6", "#6EE7B7", "#F59E0B", "#EF4444"];
 
