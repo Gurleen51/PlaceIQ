@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, CartesianGrid,
 } from "recharts";
+
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const COLORS = ["#3B82F6", "#22c55e", "#EF4444"];
 
