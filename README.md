@@ -9,13 +9,12 @@
 [![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)](https://mongodb.com/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 **A full-stack MERN application for college placement management.**
 Map student skills to job requirements, rank matches using an AI scoring engine,
 and give students and admins rich analytics dashboards.
 
-[Live Demo](#) · [Report Bug](#) · [Request Feature](#)
+[Live Demo](https://smart-analytics-tool-for-placement.vercel.app) · [Report Bug](#) · [Request Feature](#)
 
 </div>
 
@@ -50,18 +49,6 @@ PlaceIQ is a college placement intelligence system designed to bridge the gap be
 | 1 | Prepare a dataset of companies for placement drives and off-campus recruitment |
 | 2 | Map student skills with job profile requirements for various companies and roles |
 | 3 | Develop an analytical tool that helps students assess skills and improve placement readiness |
-
----
-
-## 📸 Screenshots
-
-| Dashboard | Job Listings | Student Portal |
-|-----------|-------------|----------------|
-| Platform overview with charts | Searchable job cards with skill match | Personalised job matches & skill gap |
-
-| Admin Panel | Skill Analytics | Salary Insights |
-|-------------|----------------|-----------------|
-| Manage jobs, students & admins | Top skills across student pool | Salary distribution charts |
 
 ---
 
@@ -413,12 +400,6 @@ git commit -m "Add: your feature description"
 git push origin feature/your-feature-name
 # Open a Pull Request
 ```
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
