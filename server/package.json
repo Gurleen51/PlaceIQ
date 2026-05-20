@@ -1,23 +1,23 @@
 {
-  "name": "server",
+  "name": "placeiq-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "PlaceIQ Backend API",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.6.1",
-    "multer": "^2.1.1",
-    "pdf-parse": "^2.4.5"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.6.3",
+    "multer": "^1.4.5-lts.1"
   }
 }
