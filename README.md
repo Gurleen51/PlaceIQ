@@ -14,7 +14,7 @@
 Map student skills to job requirements, rank matches using an AI scoring engine,
 and give students and admins rich analytics dashboards.
 
-[Live Demo](https://smart-analytics-tool-for-placement.vercel.app) · [Report Bug](#) · [Request Feature](#)
+[Live Demo](https://smart-analytics-tool-for-placement.vercel.app)
 
 </div>
 
@@ -412,7 +412,7 @@ git push origin feature/your-feature-name
 ## 👤 Author
 
 **PlaceIQ** — Built with ❤️ using the MERN Stack
-**Gurleen Kaur**
+- **Gurleen Kaur**
 ---
 
 <div align="center">
