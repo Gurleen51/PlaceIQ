@@ -412,7 +412,6 @@ git push origin feature/your-feature-name
 ## 👤 Author
 
 **PlaceIQ** — Built with ❤️ using the MERN Stack
-- **Gurleen Kaur**
 ---
 
 <div align="center">
