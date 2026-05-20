@@ -362,6 +362,12 @@ Add environment variable:
 | `users` | Student and admin accounts |
 | `job_postings` | Company job listings |
 | `user_job_matches` | Pre-computed student–job matches |
+| `user_skills` | Technical skills of students |
+| `user_education` | Academic records |
+| `user_certifications` | Certification information |
+| `job_applications` | Placement application records |
+| `salary_benchmarks` | Salary analytics |
+| `skill_demand_index` | Industry skill demand trends |
 
 ---
 
@@ -406,7 +412,7 @@ git push origin feature/your-feature-name
 ## 👤 Author
 
 **PlaceIQ** — Built with ❤️ using the MERN Stack
-
+**Gurleen Kaur**
 ---
 
 <div align="center">
