@@ -24,7 +24,6 @@ and give students and admins rich analytics dashboards.
 
 - [About the Project](#about-the-project)
 - [Project Objectives](#project-objectives)
-- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Folder Structure](#folder-structure)
@@ -34,7 +33,6 @@ and give students and admins rich analytics dashboards.
 - [Matching Engine](#matching-engine)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-- [License](#license)
 
 ---
 
